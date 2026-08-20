@@ -38,18 +38,18 @@ src/
 
 ```bash
 cd template
-pnpm install --frozen-lockfile
-pnpm dev
+npm ci
+npm run dev
 ```
 
-The template requires Node.js 20.9 or newer and uses pnpm 11. The initial dependency baseline is pinned and committed through `pnpm-lock.yaml`; it is not generated from unbounded `latest` ranges.
+The template requires Node.js 20.9 or newer and uses npm. The initial dependency baseline is pinned and committed through `package-lock.json`; it is not generated from unbounded `latest` ranges.
 
 ## Validation
 
 Run the complete local quality gate with:
 
 ```bash
-pnpm validate
+npm run validate
 ```
 
 The gate checks formatting, ESLint, TypeScript, dependency boundaries, and the production build. The repository workflow also runs a Gitleaks secret scan. Users should enable GitHub secret scanning and push protection for public repositories where available; local and CI scanning are additional layers, not replacements for credential rotation.
