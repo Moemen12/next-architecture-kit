@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "check:runtime": "node scripts/check-runtime.mjs",
+    "check:runtime": "tsx scripts/check-runtime.ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "format:check": "biome format . --error-on-warnings",
@@ -31,6 +31,7 @@
     "eslint-config-next": "16.3.1",
     "eslint-plugin-boundaries": "7.2.0",
     "eslint-plugin-import-x": "4.17.1",
+    "tsx": "4.20.5",
     "typescript": "6.0.3"
   },
   "engines": {

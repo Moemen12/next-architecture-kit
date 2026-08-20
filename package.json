@@ -5,14 +5,19 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "next-architecture": "./cli/index.mjs"
+    "next-architecture": "./dist/cli/index.js"
   },
   "scripts": {
-    "kit:status": "node ./cli/index.mjs status",
-    "kit:preview": "node ./cli/index.mjs upgrade --preview"
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "kit:status": "npm run build:cli && node ./dist/cli/index.js status",
+    "kit:preview": "npm run build:cli && node ./dist/cli/index.js upgrade --preview"
   },
   "engines": {
     "node": "^22.0.0 || ^24.0.0 || >=26.0.0"
   },
-  "packageManager": "npm@10.9.2"
+  "packageManager": "npm@10.9.2",
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "typescript": "6.0.3"
+  }
 }

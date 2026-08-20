@@ -11,3 +11,5 @@ reports/
 *.log
 
 *.tsbuildinfo
+
+/dist

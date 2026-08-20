@@ -104,3 +104,9 @@ ESLint `10.8.1` is newer, but the Next.js plugin dependencies used by `eslint-co
 The supported Node.js matrix is Node 22 LTS, Node 24 LTS, or Node 26 and newer. Node 25 is intentionally rejected because dependency-cruiser does not support that release line. The template checks this before the full validation pipeline and reports the required runtime directly.
 
 The template uses native `fetch` for HTTP by default. It does not install Axios or another global HTTP client. Any future higher-level client must be introduced inside an infrastructure adapter after its runtime and caching behavior are verified for the deployment target.
+
+## TypeScript-first scripts and configuration
+
+The CLI source lives in `cli/index.ts` and is compiled into `dist/` before it is exposed as an executable package binary. The template runtime check lives in `scripts/check-runtime.ts` and runs through `tsx` during development and validation.
+
+The ESLint and dependency-cruiser configuration files remain explicit ESM configuration modules because their current loaders do not provide a reliable direct TypeScript configuration contract. This is intentional: application and CLI logic are TypeScript, while tool configuration uses the format officially supported by each tool. A future migration to `eslint.config.ts` or a dependency-cruiser TypeScript config should happen only after the loaders support it without wrappers or experimental behavior.
