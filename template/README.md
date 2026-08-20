@@ -1,10 +1,10 @@
 # Next.js Architecture Kit Template
 
-This is a single-repository Next.js App Router application generated from Next Architecture Kit. It uses npm, strict TypeScript, ESLint boundary rules, dependency-graph validation, Prettier, and typed environment access.
+This is a single-repository Next.js App Router application generated from Next Architecture Kit. It uses npm, strict TypeScript, ESLint boundary rules, dependency-graph validation, Biome formatting, and typed environment access.
 
 ## Getting started
 
-Use Node.js 20.9 or newer:
+Use Node.js 22 LTS, Node.js 24 LTS, or Node.js 26 and newer. Node.js 25 is intentionally unsupported by the dependency-validation toolchain:
 
 ```bash
 npm install
@@ -19,7 +19,7 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run validate
 ```
 
-The validation command runs formatting checks, ESLint, TypeScript, dependency-boundary validation, and a production build. The project uses `package-lock.json` and `npm ci` in CI for reproducible installation.
+The validation command checks the supported runtime, runs Biome formatting, ESLint, TypeScript, dependency-boundary validation, and a production build. The project uses `package-lock.json` and `npm ci` in CI for reproducible installation. TypeScript 6 is currently selected because the Next.js TypeScript ESLint integration does not yet support TypeScript 7.
 
 ## Structure
 

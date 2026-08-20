@@ -2,7 +2,7 @@
 
 ## Core baseline
 
-The kit uses the current stable Next.js App Router baseline verified by the release process. At the time of the initial design review, the registry reports Next.js `16.3.1`, React `19.2.8`, TypeScript `7.0.2`, ESLint `10.8.1`, `eslint-config-next` `16.3.1`, `eslint-plugin-boundaries` `7.2.0`, `dependency-cruiser` `18.2.0`, Prettier `3.9.6`, and Zod `4.4.3`. These values are release inputs, not permanent promises; the repository must test a compatible set before updating them.
+The kit uses the current stable Next.js App Router baseline verified by the release process. The current tested baseline is Next.js `16.3.1`, React `19.2.8`, TypeScript `6.0.3`, ESLint `9.39.5`, `eslint-config-next` `16.3.1`, `eslint-plugin-boundaries` `7.2.0`, `dependency-cruiser` `18.2.0`, Biome `2.5.9`, and Zod `4.4.3`. These values are release inputs, not permanent promises; the repository must test a compatible set before updating them.
 
 The generated application should include only the packages that support the architecture itself:
 
@@ -15,7 +15,7 @@ The generated application should include only the packages that support the arch
 | `eslint-plugin-boundaries` | Required | Enforce classified architectural dependencies in ESLint |
 | `eslint-plugin-import` or maintained equivalent | Required | Import hygiene, resolution, and export rules |
 | `dependency-cruiser` | Required CI validator | Graph-level rules, cycles, orphans, and reports that are awkward in ESLint |
-| Prettier | Required | Deterministic formatting without architectural semantics |
+| Biome | Required | Deterministic formatting without architectural semantics |
 | Zod | Required baseline utility | Runtime validation at external boundaries and typed environment configuration |
 | GitHub Actions | Required repository policy | Reproducible lint, typecheck, build, boundary, and secret checks |
 | Secret scanner | Required policy, not necessarily an npm dependency | Local and CI detection of credentials before publication |
@@ -68,8 +68,8 @@ The canonical scripts are:
 lint          ESLint policy and Next.js rules
 lint:fix      ESLint automatic fixes where safe
 typecheck     TypeScript no-emit check
-format        Prettier write
-format:check  Prettier verification
+format        Biome formatting write
+format:check  Biome formatting verification
 architecture  ESLint/dependency-cruiser architecture checks
 test          Unit and architecture tests when present
 validate      The complete local quality gate
@@ -92,3 +92,15 @@ external provider -> infrastructure adapter -> application-owned port
 ```
 
 The public API of the feature cannot expose provider-specific types. For example, a repository contract may return an application-owned `UserRecord`; it must not return a Prisma model. A database adapter may use Prisma or Drizzle internally, but the rest of the application calls the neutral contract.
+
+## Modern verified baseline
+
+The current verified baseline uses Next.js `16.3.1`, React `19.2.8`, ESLint `9.39.5`, `eslint-config-next` `16.3.1`, TypeScript `6.0.3`, `eslint-plugin-boundaries` `7.2.0`, `eslint-plugin-import-x` `4.17.1`, `dependency-cruiser` `18.2.0`, Biome `2.5.9`, and Zod `4.4.3`.
+
+The package policy is latest-stable-first, not latest-number-blind. TypeScript `7.0.2` is currently the newest compiler release, but the current `typescript-eslint` integration used by `eslint-config-next` does not support TypeScript 7. The kit therefore selects TypeScript `6.0.3`, the newest compatible compiler line, and will move to TypeScript 7 when the required ESLint/Next integration supports it without compatibility aliases or unsupported peer overrides.
+
+ESLint `10.8.1` is newer, but the Next.js plugin dependencies used by `eslint-config-next` still declare peer ranges ending at ESLint 9. The kit therefore uses ESLint `9.39.5`, the newest compatible major, while retaining flat `eslint.config.mjs`, which is the current official Next.js configuration form. Biome `2.5.9` is used for formatting because it is a current unified formatter; ESLint remains mandatory because the architecture boundary policies are expressed through ESLint plugins.
+
+The supported Node.js matrix is Node 22 LTS, Node 24 LTS, or Node 26 and newer. Node 25 is intentionally rejected because dependency-cruiser does not support that release line. The template checks this before the full validation pipeline and reports the required runtime directly.
+
+The template uses native `fetch` for HTTP by default. It does not install Axios or another global HTTP client. Any future higher-level client must be introduced inside an infrastructure adapter after its runtime and caching behavior are verified for the deployment target.

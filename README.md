@@ -42,7 +42,7 @@ npm ci
 npm run dev
 ```
 
-The template requires Node.js 20.9 or newer and uses npm. The initial dependency baseline is pinned and committed through `package-lock.json`; it is not generated from unbounded `latest` ranges.
+The template requires Node.js 22 LTS, Node.js 24 LTS, or Node.js 26 and newer. Node.js 25 is intentionally unsupported by the dependency-validation toolchain. The initial dependency baseline is pinned and committed through `package-lock.json`; it is not generated from unbounded `latest` ranges.
 
 ## Validation
 

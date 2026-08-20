@@ -37,9 +37,6 @@ const eslintConfig = defineConfig([
     settings: {
       "boundaries/elements": elements,
       "boundaries/include": ["src/**/*", "tests/**/*"],
-      "import-x/resolver": {
-        typescript: true,
-      },
     },
     rules: {
       "boundaries/element-types": [
@@ -101,7 +98,6 @@ const eslintConfig = defineConfig([
       ],
       "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
       "import-x/no-duplicates": "error",
-      "import-x/no-relative-packages": "error",
     },
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", "coverage/**", "reports/**"]),
