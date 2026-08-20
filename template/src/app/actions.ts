@@ -1,4 +1,5 @@
 "use server";
+import "server-only";
 
 import { saveGreeting } from "@/adapters/next/composition/example";
 

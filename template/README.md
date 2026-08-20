@@ -39,6 +39,8 @@ Do not create every folder automatically. Start with the smallest structure the 
 
 Next.js code belongs in `app` and `adapters/next`. Domain and application code must not import Next.js, React presentation, databases, or vendor SDKs. Other features use a feature’s public `index` entrypoint instead of private implementation files.
 
+Server-only doors are enforced automatically. Every TypeScript file under `src/app/api/**`, `src/adapters/next/**`, `src/shared/backend/**`, and `src/modules/**/infrastructure/**` must import `server-only`; `src/app/actions.ts` is also required to do so. Run `npm run server-only:check` directly, or use `npm run validate`. Do not add `server-only` to portable domain, application, ports, contracts, or UI files.
+
 ## Add a feature
 
 Create a feature under `src/modules/<feature>` and add only the layers it needs. Keep business rules in `domain`, orchestration in `application`, external contracts in `ports`, concrete implementations in `infrastructure`, and UI in `ui`. Connect infrastructure to the application in `src/adapters/next/composition`.

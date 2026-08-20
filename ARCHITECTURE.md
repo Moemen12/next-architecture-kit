@@ -121,6 +121,20 @@ Next.js files remain in `src/app` and `src/adapters/next`. Route Handlers transl
 
 React components that do not need Next.js should not import `next/link`, `next/image`, `next/navigation`, server-only modules, or request APIs. When a component does need those capabilities, the dependency must be visible at the Next adapter/composition edge rather than hidden inside a supposedly portable feature component.
 
+### Mandatory server-only doors
+
+The kit treats the following locations as server-only doors and requires every TypeScript file in them to begin with `import "server-only";`:
+
+| Location | Why it is server-only |
+|---|---|
+| `src/app/api/**` | Route Handlers receive and translate HTTP requests. |
+| `src/app/actions.ts` and future Server Action entrypoints | Server Actions execute on the server and call backend composition. |
+| `src/adapters/next/**` | Next-specific runtime bridges and composition roots wire server implementations. |
+| `src/modules/**/infrastructure/**` | Concrete database, filesystem, queue, WebSocket, authentication, and vendor adapters belong outside portable policy. |
+| `src/shared/backend/**` | Shared backend utilities may access server-only capabilities such as environment variables. |
+
+The `server-only` check scans `src` and derives this policy from those architectural locations; developers do not need to remember which individual files require the marker. New backend integrations should be placed behind one of these existing doors, or the kit’s boundary policy must be deliberately updated before adding a new server-specific area. Ordinary `src/app` pages and layouts are not blanket-marked because a server-rendered React component is not automatically a server-only implementation: it may render portable UI and can remain a delivery entrypoint. Any sensitive or runtime-specific logic imported by those pages must still live behind a marked door.
+
 ## Strict mode target
 
 The strict mode is not a second unrelated architecture. It is a more explicit representation of the same boundaries:

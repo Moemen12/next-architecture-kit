@@ -1,3 +1,5 @@
+import "server-only";
+
 import { NextResponse } from "next/server";
 import { saveGreeting } from "@/adapters/next/composition/example";
 import { createGreetingRequest } from "@/modules/example/contracts";
