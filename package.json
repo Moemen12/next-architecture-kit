@@ -1,0 +1,17 @@
+{
+  "name": "next-architecture-kit",
+  "version": "0.1.0",
+  "description": "A pragmatic feature-based and Clean Architecture starter for Next.js App Router projects.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "next-architecture": "./cli/index.mjs"
+  },
+  "scripts": {
+    "kit:status": "node ./cli/index.mjs status",
+    "kit:preview": "node ./cli/index.mjs upgrade --preview"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

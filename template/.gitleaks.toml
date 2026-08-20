@@ -1,0 +1,12 @@
+title = "Next Architecture Kit secret policy"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Safe example environment variable names and documentation placeholders"
+regexTarget = "match"
+regexes = [
+  '''NEXT_PUBLIC_APP_NAME''',
+  '''your[-_](api[-_])?key[-_]?here''',
+]

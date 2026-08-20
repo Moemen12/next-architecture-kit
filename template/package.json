@@ -1,0 +1,36 @@
+{
+  "name": "template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "architecture": "dependency-cruiser --config .dependency-cruiser.mjs src",
+    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm architecture && pnpm build"
+  },
+  "dependencies": {
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dependency-cruiser": "18.2.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.1",
+    "eslint-plugin-boundaries": "7.2.0",
+    "eslint-plugin-import-x": "4.17.1",
+    "prettier": "3.9.6",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.20.0"
+}
