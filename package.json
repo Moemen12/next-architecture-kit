@@ -12,7 +12,8 @@
     "kit:create": "tsx cli/index.ts create",
     "kit:status": "tsx cli/index.ts status",
     "kit:preview": "tsx cli/index.ts upgrade --preview",
-    "setup": "npm ci && npm ci --prefix template",
+    "secrets": "npm --prefix template run secrets",
+    "setup": "npm ci && npm ci --prefix template && git config core.hooksPath .githooks",
     "dev": "npm --prefix template run dev",
     "build": "npm --prefix template run build",
     "validate": "npm --prefix template run validate"

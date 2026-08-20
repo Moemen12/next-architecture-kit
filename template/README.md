@@ -17,7 +17,7 @@ npm run dev
 npm run validate
 ```
 
-Validation runs the runtime guard, Biome, ESLint, TypeScript, dependency-graph rules, and the production build.
+Validation runs the runtime guard, Biome, ESLint, TypeScript, dependency-graph rules, Secretlint, and the production build. After `npm ci`, the pre-commit hook scans staged contents automatically.
 
 ## Structure
 

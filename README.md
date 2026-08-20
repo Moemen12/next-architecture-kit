@@ -14,7 +14,7 @@ npm run validate
 npm run dev
 ```
 
-The setup command installs both the kit CLI and the standalone template dependencies. You only run one command; you do not need to install separately inside `template/`.
+The setup command installs both the kit CLI and the standalone template dependencies, then activates the repository pre-commit hook. You only run one command; you do not need to install separately inside `template/`.
 
 To start a new project from the template, copy `template/` into a new repository and run `npm ci`. The generated project is intentionally a normal single Next.js repository and does not depend on this kit at runtime.
 
@@ -62,7 +62,7 @@ Domain and application code must not import Next.js, React presentation, databas
 
 ## Tooling policy
 
-The kit uses Next.js 16, React 19, TypeScript 6, ESLint 9 flat config, Biome formatting, Zod, dependency-cruiser, and `eslint-plugin-boundaries`. Direct dependencies are pinned and installed with `npm ci`. Native `fetch` is the default HTTP mechanism; integrations such as databases, authentication, queues, and WebSockets belong behind infrastructure adapters.
+The kit uses Next.js 16, React 19, TypeScript 6, ESLint 9 flat config, Biome formatting, Zod, dependency-cruiser, `eslint-plugin-boundaries`, and Secretlint. The pre-commit hook scans the exact staged contents before allowing a commit; GitHub Actions scans again in CI. Direct dependencies are pinned and installed with `npm ci`. Native `fetch` is the default HTTP mechanism; integrations such as databases, authentication, queues, and WebSockets belong behind infrastructure adapters.
 
 The CLI source is TypeScript. Tool configuration remains in the format officially supported by the tool, so `eslint.config.mjs` and `.dependency-cruiser.mjs` are intentional.
 

@@ -9,11 +9,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:runtime": "tsx scripts/check-runtime.ts",
+    "secrets": "tsx scripts/check-staged-secrets.ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "format:check": "biome format . --error-on-warnings",
     "architecture": "dependency-cruiser --config .dependency-cruiser.mjs src",
-    "validate": "npm run check:runtime && npm run format:check && npm run lint && npm run typecheck && npm run architecture && npm run build"
+    "validate": "npm run check:runtime && npm run format:check && npm run lint && npm run typecheck && npm run architecture && npm run secrets && npm run build",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "next": "16.3.1",
@@ -23,17 +25,23 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.9",
+    "@secretlint/secretlint-rule-preset-recommend": "13.0.4",
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "dependency-cruiser": "18.2.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.1",
+    "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-boundaries": "7.2.0",
     "eslint-plugin-import-x": "4.17.1",
-    "eslint-import-resolver-typescript": "4.4.5",
+    "secretlint": "13.0.4",
+    "simple-git-hooks": "2.13.1",
     "tsx": "4.20.5",
     "typescript": "6.0.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run secrets"
   },
   "engines": {
     "node": "^22.0.0 || ^24.0.0 || >=26.0.0"
