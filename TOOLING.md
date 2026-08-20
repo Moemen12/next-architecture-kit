@@ -110,3 +110,7 @@ The template uses native `fetch` for HTTP by default. It does not install Axios 
 The CLI source lives in `cli/index.ts` and is compiled into `dist/` before it is exposed as an executable package binary. The template runtime check lives in `scripts/check-runtime.ts` and runs through `tsx` during development and validation.
 
 The ESLint and dependency-cruiser configuration files remain explicit ESM configuration modules because their current loaders do not provide a reliable direct TypeScript configuration contract. This is intentional: application and CLI logic are TypeScript, while tool configuration uses the format officially supported by each tool. A future migration to `eslint.config.ts` or a dependency-cruiser TypeScript config should happen only after the loaders support it without wrappers or experimental behavior.
+
+## Boundary libraries
+
+`zod` is used in feature contracts, delivery parsing, infrastructure response validation, and environment configuration. Domain, application, and ports remain independent of Zod and receive typed values instead. `server-only` is used at server-runtime boundaries such as shared backend environment access, infrastructure adapters, and Next.js composition roots. It is intentionally not imported into portable domain or application code.

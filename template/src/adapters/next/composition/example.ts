@@ -1,3 +1,4 @@
+import "server-only";
 import { createSaveGreeting } from "@/modules/example/application";
 import { createInMemoryGreetingRepository } from "@/modules/example/infrastructure";
 

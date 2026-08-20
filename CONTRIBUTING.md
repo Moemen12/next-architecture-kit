@@ -146,3 +146,16 @@ If a boundary error appears, fix the dependency direction rather than disabling 
 ## Strict-mode migration
 
 Hybrid mode is the default. `npm run kit:preview` shows the current planned migration to strict mode without changing files. The automatic relocation and import-rewriting engine is intentionally not enabled until its migration manifest can classify unknown files and reverse changes safely.
+
+## Zod and server-only boundaries
+
+Zod is an external boundary library, not a domain dependency. Put reusable request and response schemas in `src/modules/<feature>/contracts`. Route Handlers and Server Actions parse untrusted input with those schemas before calling application use cases. Frontend code may reuse a contract for user feedback, but server parsing is always required.
+
+Domain, application, and ports should receive typed values and enforce business rules with plain TypeScript. They should not import Zod. Infrastructure may use Zod to validate responses from external providers. The `server-only` package belongs at server-runtime boundaries such as `src/shared/backend`, infrastructure implementations, and Next.js composition roots. Do not add `server-only` to portable domain or application code, because that would make extraction harder.
+
+```text
+contracts + Zod → delivery parsing → application rules → domain invariants
+server-only     → env, infrastructure, Next composition
+```
+
+The rule is not that external packages are forbidden. The rule is that each external package is owned by the narrowest layer that needs it and does not leak inward.

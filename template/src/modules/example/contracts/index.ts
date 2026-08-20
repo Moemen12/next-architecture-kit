@@ -1,2 +1,2 @@
-export { greetingContract } from "./greeting-contract";
-export type { GreetingContract } from "./greeting-contract";
+export { createGreetingRequest, greetingContract } from "./greeting-contract";
+export type { CreateGreetingRequest, GreetingContract } from "./greeting-contract";

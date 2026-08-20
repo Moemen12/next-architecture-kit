@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { saveGreeting } from "@/adapters/next/composition/example";
-
-const requestSchema = z.object({
-  name: z.string().trim().min(1).max(100),
-});
+import { createGreetingRequest } from "@/modules/example/contracts";
 
 export async function POST(request: Request) {
-  const parsed = requestSchema.safeParse(await request.json());
+  const parsed = createGreetingRequest.safeParse(await request.json());
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
