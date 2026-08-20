@@ -39,13 +39,12 @@ src/
 ├── app/                         # Next.js pages, route handlers, server actions
 ├── adapters/next/               # Next.js composition and delivery adapters
 ├── modules/<feature>/
-│   ├── frontend/                # Feature React presentation
-│   ├── contracts/               # DTOs and runtime schemas
-│   └── backend/
-│       ├── domain/              # Framework-free business rules
-│       ├── application/         # Use cases and orchestration
-│       ├── ports/               # Application-owned interfaces
-│       └── infrastructure/      # Database, API, queue, and vendor adapters
+│   ├── ui/                      # Optional feature React presentation
+│   ├── contracts/               # Optional DTOs and runtime schemas
+│   ├── domain/                  # Optional framework-free business rules
+│   ├── application/             # Use cases and orchestration
+│   ├── ports/                   # Optional application-owned interfaces
+│   └── infrastructure/          # Optional concrete adapters
 ├── shared/
 │   ├── kernel/                  # Small stable primitives
 │   ├── frontend/                # Reusable React primitives
@@ -74,7 +73,7 @@ The CLI source is TypeScript. Tool configuration remains in the format officiall
 | Area | Status | Notes |
 |---|---|---|
 | Next.js App Router template | Complete | Single-repository template with npm setup and production build |
-| Hybrid feature architecture | Complete | Feature frontend, backend domain, application, ports, infrastructure, contracts, and shared areas are present |
+| Hybrid feature architecture | Complete | Flat feature UI, domain, application, ports, infrastructure, contracts, and shared areas are present |
 | Next.js delivery boundaries | Complete | Pages, Route Handlers, Server Actions, and Next composition adapters stay at the edge |
 | Dependency direction | Complete | ESLint boundaries and dependency-cruiser enforce the current rules |
 | Public feature entrypoints | Complete | Cross-layer access is routed through deliberate `index.ts` APIs |

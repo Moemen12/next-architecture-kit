@@ -1,5 +1,5 @@
-import { createSaveGreeting } from "@/modules/example/backend/application";
-import { createInMemoryGreetingRepository } from "@/modules/example/backend/infrastructure";
+import { createSaveGreeting } from "@/modules/example/application";
+import { createInMemoryGreetingRepository } from "@/modules/example/infrastructure";
 
 const greetingRepository = createInMemoryGreetingRepository();
 

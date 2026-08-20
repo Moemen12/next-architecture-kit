@@ -77,12 +77,12 @@ The exact feature name is illustrative. The kit should generate a minimal exampl
 
 | Area | Responsibility | May import | Must not import |
 |---|---|---|---|
-| `src/app` | Next route/page entrypoints and composition | frontend public APIs, backend inbound APIs, Next.js | backend internals, database clients, domain internals |
-| `modules/*/frontend` | React presentation and client interaction | feature contracts, shared frontend, browser-safe application facades | Next server APIs, backend infrastructure |
-| `modules/*/backend/domain` | Business rules and domain models | shared kernel | Next.js, React, HTTP, database/vendor SDKs |
-| `modules/*/backend/application` | Use-case orchestration | domain, ports, shared backend/kernel | Next.js, React, HTTP, concrete infrastructure |
-| `modules/*/backend/ports` | Stable input/output contracts | domain types, shared kernel | frameworks and concrete providers |
-| `modules/*/backend/infrastructure` | Concrete implementations | ports, vendors, database drivers | frontend code and unrelated feature internals |
+| `src/app` | Next route/page entrypoints and composition | UI public APIs, application entrypoints, Next.js | feature internals, database clients, domain internals |
+| `modules/*/ui` | Optional React presentation and client interaction | feature contracts, shared frontend, browser-safe application facades | Next server APIs, infrastructure |
+| `modules/*/domain` | Optional business rules and domain models | shared kernel | Next.js, React, HTTP, database/vendor SDKs |
+| `modules/*/application` | Use-case orchestration | domain, ports, shared backend/kernel | Next.js, React, HTTP, concrete infrastructure |
+| `modules/*/ports` | Optional stable outbound contracts | domain types, shared kernel | frameworks and concrete providers |
+| `modules/*/infrastructure` | Optional concrete implementations | ports, vendors, database drivers | UI code and unrelated feature internals |
 | `modules/*/contracts` | Boundary DTOs and validation schemas | shared kernel, schema library | Next request/response types, infrastructure |
 | `adapters/next` | Next.js-specific bridges | Next.js and stable application APIs | domain implementation details |
 | `shared` | Small cross-feature primitives | standard library and approved neutral libraries | feature internals, Next.js unless explicitly in an adapter |
@@ -92,9 +92,9 @@ The exact feature name is illustrative. The kit should generate a minimal exampl
 A feature is not a namespace that permits unrestricted imports. Each feature exposes a deliberate public entrypoint, for example:
 
 ```text
-src/modules/accounts/index.ts
-src/modules/accounts/frontend/index.ts
-src/modules/accounts/backend/index.ts
+src/modules/accounts/ui/index.ts
+src/modules/accounts/application/index.ts
+src/modules/accounts/ports/index.ts
 src/modules/accounts/contracts/index.ts
 ```
 
@@ -110,7 +110,7 @@ A simple composition root wires concrete implementations in one place:
 
 ```text
 src/adapters/next/composition/
-src/modules/<feature>/backend/infrastructure/composition.ts
+src/modules/<feature>/infrastructure/composition.ts
 ```
 
 This keeps dependency injection out of ordinary feature code while preserving the essential direction of the dependency inversion principle. Strict mode may later introduce explicit factories or dependency injection only where the system proves it is useful.

@@ -140,7 +140,7 @@ function migrationPlan(): void {
     : "current-project";
   console.log(`Migration preview for ${packageName}`);
   console.log("- classify Next.js delivery files");
-  console.log("- map feature frontend/backend folders to strict-mode locations");
+  console.log("- map feature ui/domain/application/ports/infrastructure layers to strict-mode locations");
   console.log("- update imports through public feature entrypoints");
   console.log("- strengthen ESLint and dependency-graph policies");
   console.log("- write a reversible migration manifest");

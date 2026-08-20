@@ -12,16 +12,16 @@ const dependencyCruiserConfig = {
       comment: "Domain, application, ports, and contracts must remain independent of Next.js.",
       severity: "error",
       from: {
-        path: "^src/modules/[^/]+/backend/(domain|application|ports)/|^src/modules/[^/]+/contracts/|^src/shared/(kernel|backend)/",
+        path: "^src/modules/[^/]+/(domain|application|ports)/|^src/modules/[^/]+/contracts/|^src/shared/(kernel|backend)/",
       },
       to: { path: "(^|/)node_modules/next/|(^|/)node_modules/next-" },
     },
     {
-      name: "no-backend-to-frontend",
-      comment: "Backend policy must not depend on presentation code.",
+      name: "no-core-to-ui",
+      comment: "Feature policy and infrastructure must not depend on presentation code.",
       severity: "error",
-      from: { path: "^src/modules/[^/]+/backend/" },
-      to: { path: "^src/modules/[^/]+/frontend/|^src/shared/frontend/" },
+      from: { path: "^src/modules/[^/]+/(domain|application|ports|infrastructure)/" },
+      to: { path: "^src/modules/[^/]+/ui/|^src/shared/frontend/" },
     },
     {
       name: "no-unresolved",

@@ -32,11 +32,11 @@ The flow may stop before infrastructure when a use case does not need external s
 | Route Handlers | `src/app/api/**/route.ts` | Translate HTTP input/output | ORM, vendor SDKs, private feature files |
 | Server Actions | `src/app/actions.ts` or a feature delivery file | Translate form/action input | Infrastructure details directly |
 | Next.js composition | `src/adapters/next/composition/**` | Wire concrete adapters to use cases | UI implementation |
-| React feature components | `src/modules/<feature>/frontend/**` | Feature presentation | Next.js server APIs unless explicitly required |
-| Domain entities and policies | `src/modules/<feature>/backend/domain/**` | Business invariants and decisions | Next.js, React, HTTP, databases, vendors |
-| Use cases | `src/modules/<feature>/backend/application/**` | Orchestrate business operations | Next.js, concrete database/API clients |
-| Outbound ports | `src/modules/<feature>/backend/ports/**` | Interfaces required by application policy | Concrete infrastructure libraries |
-| Infrastructure adapters | `src/modules/<feature>/backend/infrastructure/**` | Implement ports using databases or vendors | Presentation code |
+| React feature components | `src/modules/<feature>/ui/**` | Feature presentation | Next.js server APIs unless explicitly required |
+| Domain entities and policies | `src/modules/<feature>/domain/**` | Business invariants and decisions | Next.js, React, HTTP, databases, vendors |
+| Use cases | `src/modules/<feature>/application/**` | Orchestrate business operations | Next.js, concrete database/API clients |
+| Outbound ports | `src/modules/<feature>/ports/**` | Interfaces required by application policy | Concrete infrastructure libraries |
+| Infrastructure adapters | `src/modules/<feature>/infrastructure/**` | Implement ports using databases or vendors | Presentation code |
 | Runtime schemas and DTOs | `src/modules/<feature>/contracts/**` | Validate and describe feature boundaries | Next.js delivery details |
 | Shared kernel | `src/shared/kernel/**` | Small stable primitives used widely | Feature-specific code |
 | Shared backend | `src/shared/backend/**` | Server-neutral technical helpers | Next.js delivery and feature internals |
@@ -49,31 +49,30 @@ Create a directory under `src/modules`:
 
 ```text
 src/modules/invoices/
-├── frontend/
+├── ui/
 │   ├── components/
 │   └── index.ts
 ├── contracts/
 │   ├── invoice-contract.ts
 │   └── index.ts
-└── backend/
-    ├── domain/
-    ├── application/
-    │   ├── create-invoice.ts
-    │   └── index.ts
-    ├── ports/
-    │   ├── invoice-repository.ts
-    │   └── index.ts
-    └── infrastructure/
-        ├── in-memory-invoice-repository.ts
-        └── index.ts
+├── domain/
+├── application/
+│   ├── create-invoice.ts
+│   └── index.ts
+├── ports/
+│   ├── invoice-repository.ts
+│   └── index.ts
+└── infrastructure/
+    ├── in-memory-invoice-repository.ts
+    └── index.ts
 ```
 
-Start with only the folders the feature needs. Add a domain object when there is a business rule, an application use case when there is an operation, a port when the use case needs an external capability, and infrastructure only when a concrete implementation exists.
+Start with only the layers the feature needs. Add `domain` when there is a business rule, `application` when there is an operation, `ports` when a use case needs an external capability, and `infrastructure` only when a concrete implementation exists. Add `ui` only when the feature has presentation code.
 
 Expose deliberate public APIs from `index.ts` files. Consumers should import from a feature boundary, for example:
 
 ```ts
-import { createInvoice } from "@/modules/invoices/backend/application";
+import { createInvoice } from "@/modules/invoices/application";
 ```
 
 Do not import private implementation paths from another feature.
@@ -100,7 +99,7 @@ Do not put validation rules, repository calls, or business decisions directly in
 Define the required capability as a port owned by the application layer:
 
 ```ts
-// src/modules/invoices/backend/ports/invoice-repository.ts
+// src/modules/invoices/ports/invoice-repository.ts
 export interface InvoiceRepository {
   save(invoice: Invoice): Promise<void>;
 }
@@ -109,7 +108,7 @@ export interface InvoiceRepository {
 Implement it in infrastructure:
 
 ```text
-src/modules/invoices/backend/infrastructure/postgres-invoice-repository.ts
+src/modules/invoices/infrastructure/postgres-invoice-repository.ts
 ```
 
 The implementation may import a database driver or ORM. The port and use case must not. Wire the implementation in:
@@ -122,7 +121,7 @@ The application should depend on the interface, using a factory or explicit func
 
 ## Frontend portability
 
-A component belongs in `modules/<feature>/frontend` when it is specific to that feature. A component belongs in `shared/frontend` only when it is genuinely reusable across features. Keep React components free of Next.js imports when portability matters. Components that require `next/link`, server actions, or server-only data access are delivery-specific and should stay near `src/app` or an explicit Next adapter.
+A component belongs in `modules/<feature>/ui` when it is specific to that feature. A component belongs in `shared/frontend` only when it is genuinely reusable across features. Keep React components free of Next.js imports when portability matters. Components that require `next/link`, server actions, or server-only data access are delivery-specific and should stay near `src/app` or an explicit Next adapter.
 
 Do not create abstractions only to make a hypothetical future extraction possible. Extract a boundary when the component or capability has a real second consumer.
 

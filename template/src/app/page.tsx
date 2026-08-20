@@ -1,5 +1,5 @@
-import { getGreeting } from "@/modules/example/backend/application";
-import { GreetingCard } from "@/modules/example/frontend";
+import { getGreeting } from "@/modules/example/application";
+import { GreetingCard } from "@/modules/example/ui";
 
 export default function Home() {
   const greeting = getGreeting("developer");
