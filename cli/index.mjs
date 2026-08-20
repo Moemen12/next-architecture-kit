@@ -63,7 +63,7 @@ switch (command) {
     migrationPlan();
     break;
   case "validate":
-    console.log("Run `pnpm validate` in the generated project to execute the complete quality gate.");
+    console.log("Run `npm run validate` in the generated project to execute the complete quality gate.");
     break;
   case "revert":
     console.error("Revert requires a recorded migration manifest; no mutation was performed.");

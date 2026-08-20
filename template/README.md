@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Architecture Kit Template
 
-## Getting Started
+This is a single-repository Next.js App Router application generated from Next Architecture Kit. It uses npm, strict TypeScript, ESLint boundary rules, dependency-graph validation, Prettier, and typed environment access.
 
-First, run the development server:
+## Getting started
+
+Use Node.js 20.9 or newer:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality gate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run validate
+```
 
-## Learn More
+The validation command runs formatting checks, ESLint, TypeScript, dependency-boundary validation, and a production build. The project uses `package-lock.json` and `npm ci` in CI for reproducible installation.
 
-To learn more about Next.js, take a look at the following resources:
+## Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+├── app/                         # Next.js delivery only
+├── modules/<feature>/
+│   ├── frontend/                # portable React presentation
+│   ├── backend/
+│   │   ├── domain/              # business rules
+│   │   ├── application/         # use cases
+│   │   ├── ports/               # stable contracts
+│   │   └── infrastructure/      # concrete adapters
+│   └── contracts/               # boundary DTOs and schemas
+├── shared/                      # small cross-feature primitives
+└── adapters/next/               # explicit Next.js bridges
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Next.js Route Handlers and Server Actions belong at the delivery edge. They translate transport input and output; they do not contain domain rules or direct database calls. Business policy must not import Next.js, React delivery APIs, or concrete vendor libraries.
 
-## Deploy on Vercel
+## Environment variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copy `.env.example` to `.env.local` and replace only the values required by your application. Do not commit `.env.local` or credentials. Access environment variables through the typed boundary in `src/shared/backend/env.ts` rather than reading `process.env` throughout the codebase.
