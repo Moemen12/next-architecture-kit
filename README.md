@@ -28,6 +28,9 @@ To start a new project from the template, copy `template/` into a new repository
 | `npm run kit:status` | Report governed project files |
 | `npm run kit:preview` | Preview the future strict-mode migration |
 | `npm run kit:create -- <name>` | Create a new project from the template |
+| `npm run secrets` | Scan staged contents for credentials |
+
+Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before adding features. It explains where frontend, backend, domain, application, ports, infrastructure, contracts, adapters, and shared code belong.
 
 ## Architecture
 
@@ -66,9 +69,28 @@ The kit uses Next.js 16, React 19, TypeScript 6, ESLint 9 flat config, Biome for
 
 The CLI source is TypeScript. Tool configuration remains in the format officially supported by the tool, so `eslint.config.mjs` and `.dependency-cruiser.mjs` are intentional.
 
-## Roadmap
+## What is complete versus what remains
 
-The current kit provides the complete hybrid structure, boundary enforcement, a safe CLI status/preview surface, and the migration manifest foundation. The next strict-mode milestone will add a generated manifest, classified-file migration, import rewriting, unknown-file reporting, and reversible upgrade/downgrade operations.
+| Area | Status | Notes |
+|---|---|---|
+| Next.js App Router template | Complete | Single-repository template with npm setup and production build |
+| Hybrid feature architecture | Complete | Feature frontend, backend domain, application, ports, infrastructure, contracts, and shared areas are present |
+| Next.js delivery boundaries | Complete | Pages, Route Handlers, Server Actions, and Next composition adapters stay at the edge |
+| Dependency direction | Complete | ESLint boundaries and dependency-cruiser enforce the current rules |
+| Public feature entrypoints | Complete | Cross-layer access is routed through deliberate `index.ts` APIs |
+| TypeScript-first CLI | Complete initial version | `create`, `status`, and safe `upgrade --preview` commands are available |
+| One-command setup | Complete | `npm run setup` installs root and template dependencies and activates the hook |
+| Runtime validation | Complete | Supported Node runtime guard and full `npm run validate` gate |
+| Secret protection | Complete initial version | Secretlint pre-commit scanning plus GitHub Actions scanning |
+| Environment boundary | Complete initial version | Typed Zod-based access through the shared backend boundary |
+| Concise documentation | Complete initial version | README quick start plus [`CONTRIBUTING.md`](./CONTRIBUTING.md) implementation guide |
+| Strict Clean Architecture layout | Remaining | Final strict-mode folder map still needs to be formalized |
+| Automatic hybrid-to-clean migration | Remaining | File classification, import rewriting, and migration execution are not enabled yet |
+| Reversible migrations | Remaining | Migration history and safe downgrade operations still need implementation |
+| Unknown-file classification report | Partial | CLI preview describes the requirement; full manifest-driven reporting remains |
+| Optional integrations | Remaining | Database, authentication, queues, WebSockets, and provider adapters need separate integration modules |
+
+The kit is ready for new projects in hybrid mode. The remaining work is the migration product that upgrades an existing generated project into strict mode without losing or silently moving developer code.
 
 ## License
 
