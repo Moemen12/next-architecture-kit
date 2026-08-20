@@ -1,45 +1,49 @@
 # Next.js Architecture Kit Template
 
-This is a single-repository Next.js App Router application generated from Next Architecture Kit. It uses npm, strict TypeScript, ESLint boundary rules, dependency-graph validation, Biome formatting, and typed environment access.
+A single-repository Next.js App Router project using the hybrid architecture from Next Architecture Kit.
 
-## Getting started
+## Start
 
-Use Node.js 22 LTS, Node.js 24 LTS, or Node.js 26 and newer. Node.js 25 is intentionally unsupported by the dependency-validation toolchain:
+Use Node 22 LTS, Node 24 LTS, or Node 26+.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-## Quality gate
+## Validate
 
 ```bash
 npm run validate
 ```
 
-The validation command checks the supported runtime, runs Biome formatting, ESLint, TypeScript, dependency-boundary validation, and a production build. The project uses `package-lock.json` and `npm ci` in CI for reproducible installation. TypeScript 6 is currently selected because the Next.js TypeScript ESLint integration does not yet support TypeScript 7.
+Validation runs the runtime guard, Biome, ESLint, TypeScript, dependency-graph rules, and the production build.
 
 ## Structure
 
 ```text
 src/
-├── app/                         # Next.js delivery only
+├── app/                         # Next.js pages, Route Handlers, Server Actions
+├── adapters/next/               # Next-specific composition and delivery adapters
 ├── modules/<feature>/
-│   ├── frontend/                # portable React presentation
-│   ├── backend/
-│   │   ├── domain/              # business rules
-│   │   ├── application/         # use cases
-│   │   ├── ports/               # stable contracts
-│   │   └── infrastructure/      # concrete adapters
-│   └── contracts/               # boundary DTOs and schemas
-├── shared/                      # small cross-feature primitives
-└── adapters/next/               # explicit Next.js bridges
+│   ├── frontend/                # React presentation
+│   ├── contracts/               # DTOs and runtime schemas
+│   └── backend/
+│       ├── domain/              # Framework-free business rules
+│       ├── application/         # Use cases
+│       ├── ports/               # Application-owned interfaces
+│       └── infrastructure/      # Concrete external adapters
+└── shared/                      # Small reusable primitives
 ```
 
-Next.js Route Handlers and Server Actions belong at the delivery edge. They translate transport input and output; they do not contain domain rules or direct database calls. Business policy must not import Next.js, React delivery APIs, or concrete vendor libraries.
+Next.js code belongs in `app` and `adapters/next`. Domain and application code must not import Next.js, React presentation, databases, or vendor SDKs. Other features use a feature’s public `index` entrypoint instead of private implementation files.
 
-## Environment variables
+## Add a feature
 
-Copy `.env.example` to `.env.local` and replace only the values required by your application. Do not commit `.env.local` or credentials. Access environment variables through the typed boundary in `src/shared/backend/env.ts` rather than reading `process.env` throughout the codebase.
+Create a feature under `src/modules/<feature>` and add only the layers it needs. Keep business rules in `backend/domain`, orchestration in `backend/application`, external contracts in `backend/ports`, and concrete implementations in `backend/infrastructure`. Connect infrastructure to the application in `src/adapters/next/composition`.
+
+Use native `fetch` for HTTP unless an adapter has a clear reason to use another client. Keep database, authentication, queues, WebSockets, and vendor libraries behind infrastructure ports.
+
+## Environment
+
+Copy `.env.example` to `.env.local`. Read environment variables through `src/shared/backend/env.ts`; do not access `process.env` throughout the application.

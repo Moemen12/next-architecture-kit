@@ -30,17 +30,6 @@ const dependencyCruiserConfig = {
       from: {},
       to: { couldNotResolve: true },
     },
-    {
-      name: "no-orphans",
-      comment: "Orphaned files in governed source are reported for review.",
-      severity: "warn",
-      from: {
-        orphan: true,
-        pathNot:
-          "(^|/)(page|layout|loading|error|not-found|route|template|default|middleware)[.]tsx?$",
-      },
-      to: {},
-    },
   ],
   options: {
     doNotFollow: { path: "(^|/)node_modules/" },

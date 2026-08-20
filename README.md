@@ -1,83 +1,75 @@
 # Next Architecture Kit
 
-**Next Architecture Kit** is an opinionated starter for new Next.js App Router applications. It combines feature-based organization with a pragmatic Clean Architecture boundary model: business policy stays framework-neutral, Next.js remains at the delivery edge, and infrastructure implementations sit behind application-owned contracts.
+An npm-based, TypeScript-first starter for new Next.js App Router projects. It combines feature organization with practical Clean Architecture boundaries and is designed to become stricter without rewriting business logic.
 
-## Why this exists
+## Quick start
 
-Many projects begin with a simple feature-based structure and later discover that framework imports, database types, transport concerns, and UI code have become inseparable. Full Clean Architecture can be valuable, but applying every pattern immediately often adds ceremony before the product has earned it.
-
-This kit starts with the useful middle ground. Features stay cohesive, but their important boundaries are explicit from the first commit. The default structure is designed so a future strict-mode migration can move files and strengthen rules instead of forcing a business-logic rewrite.
-
-## Repository layout
-
-```text
-.
-├── ARCHITECTURE.md       # dependency direction and folder contract
-├── TOOLING.md            # baseline package and security policy
-└── template/             # generated single-repository Next.js application
-```
-
-The generated application uses this shape:
-
-```text
-src/
-├── app/                  # Next.js App Router delivery only
-├── modules/<feature>/
-│   ├── frontend/         # portable React presentation
-│   ├── backend/
-│   │   ├── domain/       # business rules
-│   │   ├── application/  # use cases
-│   │   ├── ports/        # stable contracts
-│   │   └── infrastructure/# concrete adapters
-│   └── contracts/        # boundary DTOs and schemas
-├── shared/               # small cross-feature primitives
-└── adapters/next/        # explicit Next.js bridges
-```
-
-## Try the template
+Requirements: Node 22 LTS, Node 24 LTS, or Node 26+. Node 25 is not supported by the dependency-validation toolchain.
 
 ```bash
-cd template
-npm ci
+git clone https://github.com/Moemen12/next-architecture-kit.git
+cd next-architecture-kit
+npm run setup
+npm run validate
 npm run dev
 ```
 
-The template requires Node.js 22 LTS, Node.js 24 LTS, or Node.js 26 and newer. Node.js 25 is intentionally unsupported by the dependency-validation toolchain. The initial dependency baseline is pinned and committed through `package-lock.json`; it is not generated from unbounded `latest` ranges.
+The setup command installs both the kit CLI and the standalone template dependencies. You only run one command; you do not need to install separately inside `template/`.
 
-## Validation
+To start a new project from the template, copy `template/` into a new repository and run `npm ci`. The generated project is intentionally a normal single Next.js repository and does not depend on this kit at runtime.
 
-Run the complete local quality gate with:
+## Commands
 
-```bash
-npm run validate
+| Command | Purpose |
+|---|---|
+| `npm run validate` | Format, lint, typecheck, enforce architecture, and build |
+| `npm run dev` | Start the template development server |
+| `npm run build` | Build the template for production |
+| `npm run kit:status` | Report governed project files |
+| `npm run kit:preview` | Preview the future strict-mode migration |
+| `npm run kit:create -- <name>` | Create a new project from the template |
+
+## Architecture
+
+```text
+src/
+├── app/                         # Next.js pages, route handlers, server actions
+├── adapters/next/               # Next.js composition and delivery adapters
+├── modules/<feature>/
+│   ├── frontend/                # Feature React presentation
+│   ├── contracts/               # DTOs and runtime schemas
+│   └── backend/
+│       ├── domain/              # Framework-free business rules
+│       ├── application/         # Use cases and orchestration
+│       ├── ports/               # Application-owned interfaces
+│       └── infrastructure/      # Database, API, queue, and vendor adapters
+├── shared/
+│   ├── kernel/                  # Small stable primitives
+│   ├── frontend/                # Reusable React primitives
+│   └── backend/                 # Reusable server-neutral utilities
+└── contracts/                   # Application-wide contracts when required
 ```
 
-The gate checks formatting, ESLint, TypeScript, dependency boundaries, and the production build. The repository workflow also runs a Gitleaks secret scan. Users should enable GitHub secret scanning and push protection for public repositories where available; local and CI scanning are additional layers, not replacements for credential rotation.
+The dependency direction is inward:
 
-## Boundary philosophy
+```text
+Next delivery → composition → application → domain
+                              ↓
+                             ports ← infrastructure
+```
 
-The core rule is simple:
+Domain and application code must not import Next.js, React presentation, database clients, or vendor SDKs. Features expose public `index` files; private implementation paths are not valid cross-feature APIs.
 
-> Next.js delivery may depend on application policy. Application policy must not depend on Next.js.
+## Tooling policy
 
-The validator checks actual imports and the dependency graph. Folder names alone do not make an architecture clean. A domain module importing `next/headers`, a database driver, or another feature's private implementation is a violation even if the file is located in a folder named `domain`.
+The kit uses Next.js 16, React 19, TypeScript 6, ESLint 9 flat config, Biome formatting, Zod, dependency-cruiser, and `eslint-plugin-boundaries`. Direct dependencies are pinned and installed with `npm ci`. Native `fetch` is the default HTTP mechanism; integrations such as databases, authentication, queues, and WebSockets belong behind infrastructure adapters.
 
-Features expose public entrypoints. Other features may not import private implementation folders directly. This is the seam that later allows a feature to be extracted into an adapter or package.
+The CLI source is TypeScript. Tool configuration remains in the format officially supported by the tool, so `eslint.config.mjs` and `.dependency-cruiser.mjs` are intentional.
 
 ## Roadmap
 
-The next releases will add the project-generation CLI and a migration manifest. The intended commands are:
-
-```text
-next-architecture create <name>
-next-architecture validate
-next-architecture upgrade --preview
-next-architecture upgrade
-next-architecture revert <migration-id>
-```
-
-Upgrade will classify known files, transform supported paths and imports, strengthen the boundary policy, and report unknown files for manual review. Revert will use the migration manifest rather than guessing from the current folder names. The tool will never silently delete or relocate an unclassified file.
+The current kit provides the complete hybrid structure, boundary enforcement, a safe CLI status/preview surface, and the migration manifest foundation. The next strict-mode milestone will add a generated manifest, classified-file migration, import rewriting, unknown-file reporting, and reversible upgrade/downgrade operations.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT

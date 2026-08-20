@@ -4,8 +4,23 @@ import nextTs from "eslint-config-next/typescript";
 import boundaries from "eslint-plugin-boundaries";
 import importX from "eslint-plugin-import-x";
 
+const sharedTypes = ["shared-kernel", "shared-frontend", "shared-backend"];
+const allLocalTypes = [
+  "next-composition",
+  "next-delivery",
+  "frontend",
+  "backend-domain",
+  "backend-application",
+  "backend-ports",
+  "backend-infrastructure",
+  "contracts",
+  ...sharedTypes,
+  "tests",
+];
+
 const elements = [
-  { type: "next-delivery", pattern: ["src/app/**/*", "src/adapters/next/**/*"] },
+  { type: "next-composition", pattern: "src/adapters/next/composition/**/*" },
+  { type: "next-delivery", pattern: "src/app/**/*" },
   { type: "frontend", pattern: "src/modules/*/frontend/**/*", capture: ["feature"] },
   { type: "backend-domain", pattern: "src/modules/*/backend/domain/**/*", capture: ["feature"] },
   {
@@ -26,6 +41,10 @@ const elements = [
   { type: "tests", pattern: "tests/**/*" },
 ];
 
+const allowTypes = (types) => ({
+  to: { element: { types: { anyOf: types } } },
+});
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -37,62 +56,97 @@ const eslintConfig = defineConfig([
     settings: {
       "boundaries/elements": elements,
       "boundaries/include": ["src/**/*", "tests/**/*"],
+      "import/resolver": { typescript: true },
+      "import-x/resolver": { typescript: true },
     },
     rules: {
-      "boundaries/element-types": [
+      "boundaries/dependencies": [
         "error",
         {
           default: "disallow",
-          rules: [
+          policies: [
             {
-              from: "next-delivery",
-              allow: ["frontend", "backend-application", "backend-ports", "contracts", "shared-*"],
+              from: { element: { type: "next-delivery" } },
+              allow: allowTypes([
+                "next-composition",
+                "frontend",
+                "backend-application",
+                "backend-ports",
+                "contracts",
+                ...sharedTypes,
+              ]),
             },
             {
-              from: "frontend",
-              allow: ["frontend", "contracts", "shared-frontend", "shared-kernel"],
+              from: { element: { type: "next-composition" } },
+              allow: allowTypes([
+                "backend-application",
+                "backend-infrastructure",
+                "backend-ports",
+                "contracts",
+                ...sharedTypes,
+              ]),
             },
-            { from: "backend-domain", allow: ["backend-domain", "shared-kernel"] },
             {
-              from: "backend-application",
-              allow: [
+              from: { element: { type: "frontend" } },
+              allow: allowTypes(["frontend", "contracts", "shared-frontend", "shared-kernel"]),
+            },
+            {
+              from: { element: { type: "backend-domain" } },
+              allow: allowTypes(["backend-domain", "shared-kernel"]),
+            },
+            {
+              from: { element: { type: "backend-application" } },
+              allow: allowTypes([
                 "backend-domain",
                 "backend-application",
                 "backend-ports",
                 "contracts",
                 "shared-backend",
                 "shared-kernel",
-              ],
+              ]),
             },
-            { from: "backend-ports", allow: ["backend-domain", "shared-kernel"] },
             {
-              from: "backend-infrastructure",
-              allow: [
+              from: { element: { type: "backend-ports" } },
+              allow: allowTypes(["backend-domain", "shared-kernel"]),
+            },
+            {
+              from: { element: { type: "backend-infrastructure" } },
+              allow: allowTypes([
                 "backend-domain",
                 "backend-application",
                 "backend-ports",
                 "contracts",
                 "shared-backend",
                 "shared-kernel",
-              ],
+              ]),
             },
-            { from: "contracts", allow: ["shared-kernel"] },
-            { from: "shared-frontend", allow: ["shared-frontend", "shared-kernel"] },
-            { from: "shared-backend", allow: ["shared-backend", "shared-kernel"] },
-            { from: "shared-kernel", allow: ["shared-kernel"] },
-            { from: "tests", allow: ["*", "tests"] },
-          ],
-        },
-      ],
-      "boundaries/entry-point": [
-        "error",
-        {
-          default: "disallow",
-          rules: [
-            { target: "frontend", allow: "src/modules/*/frontend/index.ts" },
-            { target: "backend-application", allow: "src/modules/*/backend/application/index.ts" },
-            { target: "backend-ports", allow: "src/modules/*/backend/ports/index.ts" },
-            { target: "contracts", allow: "src/modules/*/contracts/index.ts" },
+            { from: { element: { type: "contracts" } }, allow: allowTypes(["shared-kernel"]) },
+            {
+              from: { element: { type: "shared-frontend" } },
+              allow: allowTypes(["shared-frontend", "shared-kernel"]),
+            },
+            {
+              from: { element: { type: "shared-backend" } },
+              allow: allowTypes(["shared-backend", "shared-kernel"]),
+            },
+            { from: { element: { type: "shared-kernel" } }, allow: allowTypes(["shared-kernel"]) },
+            { from: { element: { type: "tests" } }, allow: allowTypes(allLocalTypes) },
+            {
+              to: { element: { type: "frontend" } },
+              allow: { to: { element: { fileInternalPath: ["index.ts", "index.tsx"] } } },
+            },
+            {
+              to: { element: { type: "backend-application" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
+            {
+              to: { element: { type: "backend-ports" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
+            {
+              to: { element: { type: "contracts" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
           ],
         },
       ],

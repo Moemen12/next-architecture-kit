@@ -1,15 +1,29 @@
 #!/usr/bin/env node
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { join, relative, resolve } from "node:path";
 
-type PackageManifest = Readonly<{ name?: string }>;
+type PackageManifest = Readonly<{ name?: string; private?: boolean }>;
+type KitManifest = Readonly<{
+  schemaVersion: 1;
+  mode: "hybrid" | "clean";
+  knownRoots: readonly string[];
+  migrations: readonly string[];
+}>;
 
 const root = resolve(process.cwd());
 const command = process.argv[2] ?? "help";
+const argument = process.argv[3];
 const preview = process.argv.includes("--preview");
-
 const knownRoots = ["src/app", "src/modules", "src/shared", "src/adapters", "tests"];
+const manifestFile = ".next-architecture.json";
 
 function walk(directory: string): string[] {
   if (!existsSync(directory)) return [];
@@ -19,18 +33,98 @@ function walk(directory: string): string[] {
   });
 }
 
-function projectFiles(): string[] {
-  return knownRoots.flatMap((path) => walk(join(root, path))).map((path) => relative(root, path));
+function projectFiles(projectRoot = root): string[] {
+  return knownRoots
+    .flatMap((path) => walk(join(projectRoot, path)))
+    .map((path) => relative(projectRoot, path));
 }
 
 function printHelp(): void {
-  console.log(`Next Architecture Kit\n\nCommands:\n  validate              Run the generated project's validation script\n  status                Report files known to the architecture manifest\n  upgrade --preview     Preview the strict-mode migration plan\n  upgrade               Refuse to mutate until a migration manifest is present\n  revert <migration-id> Refuse to mutate until a migration manifest is present`);
+  console.log(`Next Architecture Kit
+
+Commands:
+  create <name>          Create a new project from the hybrid template
+  validate               Run validation in the current generated project
+  status                 Report files known to the architecture manifest
+  upgrade --preview      Preview the strict-mode migration plan
+  upgrade                Refuse to mutate until a migration manifest is finalized
+  revert <migration-id>  Refuse to mutate until a recorded migration exists`);
+}
+
+function readManifest(projectRoot = root): KitManifest | null {
+  const file = join(projectRoot, manifestFile);
+  if (!existsSync(file)) return null;
+  return JSON.parse(readFileSync(file, "utf8")) as KitManifest;
+}
+
+function writeManifest(projectRoot: string): void {
+  const manifest: KitManifest = {
+    schemaVersion: 1,
+    mode: "hybrid",
+    knownRoots,
+    migrations: [],
+  };
+  writeFileSync(
+    join(projectRoot, manifestFile),
+    `{
+  "schemaVersion": 1,
+  "mode": "hybrid",
+  "knownRoots": ["src/app", "src/modules", "src/shared", "src/adapters", "tests"],
+  "migrations": []
+}
+`,
+  );
+}
+
+function createProject(): void {
+  if (!argument || argument.startsWith("-")) {
+    console.error("Usage: npm run kit:create -- <project-directory>");
+    process.exitCode = 2;
+    return;
+  }
+
+  const target = resolve(process.cwd(), argument);
+  const template = join(root, "template");
+  if (resolve(target) === resolve(root) || resolve(target) === resolve(template)) {
+    console.error("The project directory must be different from the kit repository.");
+    process.exitCode = 2;
+    return;
+  }
+  if (existsSync(target)) {
+    console.error(`Refusing to overwrite existing directory: ${target}`);
+    process.exitCode = 2;
+    return;
+  }
+
+  mkdirSync(target, { recursive: true });
+  cpSync(template, target, {
+    recursive: true,
+    filter: (source) => {
+      const ignoredSegments = ["node_modules", ".next", "dist", "coverage", "tsconfig.tsbuildinfo"];
+      return !source.split(/[\\\\/]+/).some((segment) => ignoredSegments.includes(segment));
+    },
+  });
+
+  const packageFile = join(target, "package.json");
+  const packageJson = JSON.parse(readFileSync(packageFile, "utf8")) as PackageManifest;
+  writeFileSync(
+    packageFile,
+    `${JSON.stringify({ ...packageJson, name: argument, private: true }, null, 2)}\n`,
+  );
+  writeManifest(target);
+  console.log(`Created ${argument} at ${target}`);
+  console.log("Next steps:");
+  console.log(`  cd ${argument}`);
+  console.log("  npm ci");
+  console.log("  npm run dev");
 }
 
 function status(): void {
+  const manifest = readManifest();
   const files = projectFiles();
   const unknown = files.filter((file) => !file.endsWith(".ts") && !file.endsWith(".tsx"));
   console.log(`Inspected ${files.length} governed files.`);
+  console.log(`Architecture mode: ${manifest?.mode ?? "uninitialized"}`);
   if (unknown.length > 0) {
     console.log("Files requiring manual classification:");
     for (const file of unknown) console.log(`- ${file}`);
@@ -58,6 +152,9 @@ function migrationPlan(): void {
 }
 
 switch (command) {
+  case "create":
+    createProject();
+    break;
   case "status":
     status();
     break;

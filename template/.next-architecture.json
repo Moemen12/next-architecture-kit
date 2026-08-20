@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "mode": "hybrid",
+  "knownRoots": ["src/app", "src/modules", "src/shared", "src/adapters", "tests"],
+  "migrations": []
+}
