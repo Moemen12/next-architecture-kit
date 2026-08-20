@@ -123,17 +123,19 @@ React components that do not need Next.js should not import `next/link`, `next/i
 
 ### Mandatory server-only doors
 
-The kit treats the following locations as server-only doors and requires every TypeScript file in them to begin with `import "server-only";`:
+The kit treats the following locations as server-only doors. The public barrel or delivery entrypoint at each door begins with `import "server-only";`; internal implementation files do not need to repeat the marker when the import rules force consumers through that barrel:
 
 | Location | Why it is server-only |
 |---|---|
 | `src/app/api/**` | Route Handlers receive and translate HTTP requests. |
 | `src/app/actions.ts` and future Server Action entrypoints | Server Actions execute on the server and call backend composition. |
-| `src/adapters/next/**` | Next-specific runtime bridges and composition roots wire server implementations. |
-| `src/modules/**/infrastructure/**` | Concrete database, filesystem, queue, WebSocket, authentication, and vendor adapters belong outside portable policy. |
-| `src/shared/backend/**` | Shared backend utilities may access server-only capabilities such as environment variables. |
+| `src/adapters/next/index.ts` and `src/adapters/next/**/index.ts` | Next-specific runtime bridges and composition roots wire server implementations. |
+| `src/modules/**/infrastructure/index.ts` | Concrete database, filesystem, queue, WebSocket, authentication, and vendor adapters belong outside portable policy. |
+| `src/shared/backend/index.ts` | Shared backend utilities may access server-only capabilities such as environment variables. |
 
-The `server-only` check scans `src` and derives this policy from those architectural locations; developers do not need to remember which individual files require the marker. New backend integrations should be placed behind one of these existing doors, or the kit’s boundary policy must be deliberately updated before adding a new server-specific area. Ordinary `src/app` pages and layouts are not blanket-marked because a server-rendered React component is not automatically a server-only implementation: it may render portable UI and can remain a delivery entrypoint. Any sensitive or runtime-specific logic imported by those pages must still live behind a marked door.
+The public barrel is the only supported import surface for these backend areas. ESLint rejects consumers that import an infrastructure, Next adapter, or shared-backend implementation file directly. It also rejects UI code from importing backend areas at all. Therefore, a composition leaf such as `src/adapters/next/composition/example.ts` is intentionally unmarked: it is an internal implementation exported through `src/adapters/next/index.ts`, and the boundary rule prevents bypassing that door.
+
+The `server-only` check scans `src` and derives these public doors automatically; developers do not need to remember which individual files require the marker. New backend integrations should be exported deliberately from a protected barrel, or the kit’s boundary policy must be updated before adding a new server-specific area. Ordinary `src/app` pages and layouts are not blanket-marked because a server-rendered React component is not automatically a server-only implementation: it may render portable UI and can remain a delivery entrypoint. Any sensitive or runtime-specific logic imported by those pages must still come through a marked door.
 
 ## Strict mode target
 

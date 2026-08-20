@@ -1,7 +1,7 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import { saveGreeting } from "@/adapters/next/composition/example";
+import { saveGreeting } from "@/adapters/next";
 import { createGreetingRequest } from "@/modules/example/contracts";
 
 export async function POST(request: Request) {

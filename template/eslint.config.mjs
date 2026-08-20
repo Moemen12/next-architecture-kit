@@ -19,7 +19,7 @@ const allLocalTypes = [
 ];
 
 const elements = [
-  { type: "next-composition", pattern: "src/adapters/next/composition/**/*" },
+  { type: "next-composition", pattern: "src/adapters/next/**/*" },
   { type: "next-delivery", pattern: "src/app/**/*" },
   { type: "ui", pattern: "src/modules/*/ui/**/*", capture: ["feature"] },
   { type: "domain", pattern: "src/modules/*/domain/**/*", capture: ["feature"] },
@@ -75,6 +75,7 @@ const eslintConfig = defineConfig([
                 "application",
                 "infrastructure",
                 "ports",
+                "next-composition",
                 "contracts",
                 ...sharedTypes,
               ]),
@@ -111,6 +112,7 @@ const eslintConfig = defineConfig([
                 "contracts",
                 "shared-backend",
                 "shared-kernel",
+                "infrastructure",
               ]),
             },
             { from: { element: { type: "contracts" } }, allow: allowTypes(["shared-kernel"]) },
@@ -124,6 +126,18 @@ const eslintConfig = defineConfig([
             },
             { from: { element: { type: "shared-kernel" } }, allow: allowTypes(["shared-kernel"]) },
             { from: { element: { type: "tests" } }, allow: allowTypes(allLocalTypes) },
+            {
+              to: { element: { type: "next-composition" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
+            {
+              to: { element: { type: "infrastructure" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
+            {
+              to: { element: { type: "shared-backend" } },
+              allow: { to: { element: { fileInternalPath: "index.ts" } } },
+            },
             {
               to: { element: { type: "ui" } },
               allow: { to: { element: { fileInternalPath: ["index.ts", "index.tsx"] } } },

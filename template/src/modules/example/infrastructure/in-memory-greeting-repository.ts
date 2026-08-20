@@ -1,4 +1,3 @@
-import "server-only";
 import type { GreetingRecord, GreetingRepository } from "../ports/greeting-repository";
 
 export function createInMemoryGreetingRepository(): GreetingRepository {

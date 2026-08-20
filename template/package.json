@@ -11,11 +11,12 @@
     "check:runtime": "tsx scripts/check-runtime.ts",
     "secrets": "tsx scripts/check-staged-secrets.ts",
     "server-only:check": "tsx scripts/check-server-only.ts",
+    "public-imports:check": "tsx scripts/check-public-imports.ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "format:check": "biome format . --error-on-warnings",
     "architecture": "dependency-cruiser --config .dependency-cruiser.mjs src",
-    "validate": "npm run check:runtime && npm run format:check && npm run lint && npm run typecheck && npm run architecture && npm run server-only:check && npm run secrets && npm run build",
+    "validate": "npm run check:runtime && npm run format:check && npm run lint && npm run typecheck && npm run architecture && npm run server-only:check && npm run public-imports:check && npm run secrets && npm run build",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {

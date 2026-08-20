@@ -1,7 +1,7 @@
 "use server";
 import "server-only";
 
-import { saveGreeting } from "@/adapters/next/composition/example";
+import { saveGreeting } from "@/adapters/next";
 
 export async function saveGreetingAction(formData: FormData) {
   const name = formData.get("name");

@@ -39,7 +39,7 @@ Do not create every folder automatically. Start with the smallest structure the 
 
 Next.js code belongs in `app` and `adapters/next`. Domain and application code must not import Next.js, React presentation, databases, or vendor SDKs. Other features use a feature’s public `index` entrypoint instead of private implementation files.
 
-Server-only doors are enforced automatically. Every TypeScript file under `src/app/api/**`, `src/adapters/next/**`, `src/shared/backend/**`, and `src/modules/**/infrastructure/**` must import `server-only`; `src/app/actions.ts` is also required to do so. Run `npm run server-only:check` directly, or use `npm run validate`. Do not add `server-only` to portable domain, application, ports, contracts, or UI files.
+Server-only doors are enforced automatically. Route Handlers and Server Actions import `server-only`, while public barrels such as `src/adapters/next/index.ts`, `src/shared/backend/index.ts`, and `src/modules/<feature>/infrastructure/index.ts` protect their internal implementations. ESLint requires consumers to use those barrels and prevents UI code from importing backend areas. Internal leaves do not repeat the marker when they can only be reached through a protected barrel. Run `npm run server-only:check` directly, or use `npm run validate`. Do not add `server-only` to portable domain, application, ports, contracts, or UI files.
 
 ## Add a feature
 

@@ -12,28 +12,30 @@ function collectFiles(directory: string): string[] {
   });
 }
 
-function isServerBoundary(relativePath: string): boolean {
+function isServerOnlyDoor(relativePath: string): boolean {
+  const isPublicBarrel = relativePath.endsWith("/index.ts");
+
   return (
-    relativePath.startsWith("src/adapters/next/") ||
-    relativePath.startsWith("src/shared/backend/") ||
-    relativePath.includes("/infrastructure/") ||
-    relativePath.startsWith("src/app/api/") ||
-    relativePath === "src/app/actions.ts"
+    (relativePath.startsWith("src/app/api/") && relativePath.endsWith("/route.ts")) ||
+    (relativePath.startsWith("src/app/") && relativePath.endsWith("/actions.ts")) ||
+    (relativePath.startsWith("src/adapters/next/") && isPublicBarrel) ||
+    (relativePath.startsWith("src/shared/backend/") && isPublicBarrel) ||
+    (relativePath.includes("/infrastructure/") && isPublicBarrel)
   );
 }
 
 const sourceRoot = join(root, "src");
-const serverFiles = collectFiles(sourceRoot).filter((file) =>
-  isServerBoundary(relative(root, file).replaceAll("\\", "/")),
+const serverOnlyDoors = collectFiles(sourceRoot).filter((file) =>
+  isServerOnlyDoor(relative(root, file).replaceAll("\\", "/")),
 );
-const missing = serverFiles.filter(
+const missing = serverOnlyDoors.filter(
   (file) => !/^\s*import\s+["']server-only["'];/m.test(readFileSync(file, "utf8")),
 );
 
 if (missing.length > 0) {
-  console.error("Every server-boundary file must import server-only:");
+  console.error("Every server-only door must import server-only:");
   for (const file of missing) console.error(`- ${relative(root, file).replaceAll("\\", "/")}`);
   process.exit(1);
 }
 
-console.log(`Server-only boundary passed for ${serverFiles.length} file(s).`);
+console.log(`Server-only boundary passed for ${serverOnlyDoors.length} door(s).`);
